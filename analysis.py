@@ -16,22 +16,23 @@ startTime = time.time()
 if __name__ == '__main__':
     
     start_year=2009
-    end_year=2014
+    end_year=2021
     
     #parameters to be analized in excel
-    grid_resolution = 3
+    grid_resolution = 6
     deviation = 0.50 #50%
     zooms = 1
 
     """
     15 variables
-    1 sim = 16 seconds
+    1 sim = 17 seconds
+    11 jahre = 11 sims = 187 sekunden = 3,1 minuten
     
     szenarios = variables * grid resolution
     
     szenarios * years = sims
     
-    time = sims * 16 seconds * zooms
+    time = sims * 17 seconds * zooms
     
     
     grid resulution = 6, zoom = 0 -> 4.4 stunden
@@ -300,7 +301,10 @@ if __name__ == '__main__':
     
     #save final paramter lists with NRMSD
     parameter_list_nrmsd = pd.concat(params_list, axis=1)
-            
+    
+    #todo: ich könnte die parameter_liste direkt in die excel speichern, dann muss ich das nicht manuell machen
+    #ich muss aber dran denken, dass die start und end_val = leer/nan sein müssen
+        
     #print final computing time
     executionTime = (time.time() - startTime)
     print('Execution time in seconds: ' + str(round(executionTime,2)))
