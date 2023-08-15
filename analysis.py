@@ -6,7 +6,7 @@ Created on Wed Aug  9 21:30:34 2023
 """
 
 
-from ABM_GES import ESS
+from ABM_GES_3 import ESS
 import pandas as pd
 import numpy as np
 import time
@@ -19,35 +19,29 @@ if __name__ == '__main__':
     end_year=2021
     
     #parameters to be analized in excel
-    grid_resolution = 4
+    grid_resolution = 5
     deviation = 0.50 #50%
-    zooms = 0
+    zooms = 2
 
     """
     15 variables
-    1 sim = 17 seconds
+    1 sim = 16.5 seconds
     11 jahre = 11 sims = 187 sekunden = 3,1 minuten
     
     szenarios = variables * grid resolution
     
     szenarios * years = sims
     
-    time = sims * 17 seconds * zooms
+    time = sims * 16 seconds * zooms
+    
+    66 sims
     
     
-    grid resulution = 6, zoom = 0 -> 4.4 stunden
-    grid resulution = 6, zoom = 1 -> 8.8 stunden
-    grid resulution = 6, zoom = 2 -> 13.2 stunden
-    grid resulution = 6, zoom = 3 -> 17.6 stunden
+    1 zoom = 8.8 h
+    2 zoom = 13.2 h
+    3 zoom = 17.6 h
     
-    Laptop:
-        
-        1 sim = 110 sekunden
-        
-        15 variablen, grid resolution 5, 11 jahre -> 825 sims
-        
-        825 * 110 s = 90000 sekunden -> 25 stunden
-        
+    laptop, ohne gurobi: 150 sekunden pro sim
     
     """
     min_index = 0    
@@ -59,7 +53,8 @@ if __name__ == '__main__':
 
 
     #create parameter_list_full
-    parameter_list = pd.read_excel('Parameters_to_be_analysed.xlsx')
+    parameter_list = pd.read_excel('Parameters_to_be_analysed.xlsx', sheet_name= "Complete")
+    #parameter_list = pd.read_excel('Parameters_to_be_analysed.xlsx', sheet_name= "Part")
     
     params_list = []
     
