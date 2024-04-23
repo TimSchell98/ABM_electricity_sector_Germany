@@ -6,7 +6,7 @@ Created on Wed Aug  9 21:30:34 2023
 """
 
 
-from ABM_GES_3 import ESS
+from ABM_GES_6 import ESS
 import pandas as pd
 import numpy as np
 import time
@@ -19,37 +19,30 @@ if __name__ == '__main__':
     end_year=2021
     
     #parameters to be analized in excel
-    grid_resolution = 5
-    deviation = 0.50 #50%
-    zooms = 2
+    grid_resolution = 3
+    deviation = 0.5 #50%
+    zooms = 0
 
     """
-    15 variables
-    1 sim = 16.5 seconds
-    11 jahre = 11 sims = 187 sekunden = 3,1 minuten
+    1 run 2009 - 2021 with prognisis: 3 min
+    10 variables
+    12 grid resolution
+    -> 120 runs * 3 min (laptop) = 378 min  -> 6.3 stunden
     
-    szenarios = variables * grid resolution
+    total time = variables * grid resolution * 3.15 (laptop) * zooms
     
-    szenarios * years = sims
-    
-    time = sims * 16 seconds * zooms
-    
-    66 sims
-    
-    
-    1 zoom = 8.8 h
-    2 zoom = 13.2 h
-    3 zoom = 17.6 h
-    
-    laptop, ohne gurobi: 150 sekunden pro sim
     
     """
+
+    print("Estimated runtime in minutes:")
+    runtime = (grid_resolution*10)*3.15 + (grid_resolution*10)*3.15 * zooms
+    print(runtime)
+
     min_index = 0    
 
     elec_prices_empirical = pd.read_excel("Strompreis.xlsx",sheet_name="Empirical")
     
     installed_power_empirical = pd.read_excel("Installed_power.xlsx")
-    
 
 
     #create parameter_list_full
@@ -110,6 +103,8 @@ if __name__ == '__main__':
                 parameter_list_full.iloc[j+i*grid_resolution,i] = parameter_list_steps.iloc[j,i]
     
         
+    
+    
         for y in range(0,len(parameter_list_full)):
         
             #create parameter_dict for the dynamic definition of parameters
@@ -133,10 +128,10 @@ if __name__ == '__main__':
             
             electricity_prices = ess.agents["Government"]["data"]["Electricity_cost"]
             
-            installed_power_coal = ess.agents["Producer 1"]["data"]["Installed_power"]
-            installed_power_gas = ess.agents["Producer 2"]["data"]["Installed_power"] + ess.agents["Producer 3"]["data"]["Installed_power"]
-            installed_power_solar = ess.agents["Producer 5"]["data"]["Installed_power"]
-            installed_power_wind = ess.agents["Producer 6"]["data"]["Installed_power"]
+            installed_power_coal = ess.agents["Producer_Coal"]["data"]["Installed_power"]
+            installed_power_gas = ess.agents["Producer_Gas_CC"]["data"]["Installed_power"] + ess.agents["Producer_Gas_CT"]["data"]["Installed_power"]
+            installed_power_solar = ess.agents["Producer_Solar"]["data"]["Installed_power"]
+            installed_power_wind = ess.agents["Producer_Wind"]["data"]["Installed_power"]
             
             elec_prices = pd.concat([elec_prices, electricity_prices], ignore_index = True, axis=1)
             
