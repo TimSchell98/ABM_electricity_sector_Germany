@@ -166,8 +166,8 @@ class ESS:
         self.Governmental_funding = governmental_funding
         
         #import LIBOR index list
-        #self.LIBOR_index = pd.read_excel("LIBOR.xlsx", sheet_name= "2009-2050")
-        self.LIBOR_index = pd.read_excel("LIBOR.xlsx", sheet_name= "2009-2050 Crisis")
+        self.LIBOR_index = pd.read_excel("LIBOR.xlsx", sheet_name= "2009-2050")
+        #self.LIBOR_index = pd.read_excel("LIBOR.xlsx", sheet_name= "2009-2050 Crisis")
         
         #import risk markup list
         self.Risk_markup = pd.read_excel("Risk_markup.xlsx")
@@ -537,7 +537,7 @@ class ESS:
         network.add('Load', name='Sum_consumers', bus='Main_bus', p_set=self.load_profile)
         
         #Optimize network
-        network.optimize(solver_name='gurobi', threads = 8, method = 3)
+        network.optimize(solver_name='gurobi')
 
         #save links and stores
         self.links = network.links
@@ -710,10 +710,10 @@ class ESS:
                 
                 
                 #strategy 4: increase storage
-                self.battery_max = 10000*2
-                self.hydrogen_max = 250000*2
-                self.battery_shift = 2.5
-                self.hydrogen_shift = 1.5
+                #self.battery_max = 10000*2
+                #self.hydrogen_max = 250000*2
+                #self.battery_shift = 2.5
+                #self.hydrogen_shift = 1.5
 
 
                 
@@ -767,10 +767,10 @@ class ESS:
                 
                 
                 #strategy 4: increase storage
-                self.battery_max = 10000
-                self.hydrogen_max = 250000
-                self.battery_shift = 2.5
-                self.hydrogen_shift = 1
+                #self.battery_max = 10000
+                #self.hydrogen_max = 250000
+                #self.battery_shift = 2.5
+                #self.hydrogen_shift = 1
     
     
             #   ---Run year as prognosis---
@@ -2845,7 +2845,7 @@ if __name__ == '__main__':
 
     #init class
     start_year=2009
-    end_year=2050
+    end_year=2021
     
     plot_data = True
     
