@@ -19,12 +19,12 @@ if __name__ == '__main__':
     end_year=2021
     
     #parameters to be analized in excel
-    grid_resolution = 3
-    deviation = 0.5 #50%
+    grid_resolution = 4
+    deviation = 0.05 #50%
     zooms = 0
 
     """
-    1 run 2009 - 2021 with prognisis: 3 min
+    1 run 2009 - 2021 with prognisis: 3 min (laptop)/ 2 min (Desktop)
     10 variables
     12 grid resolution
     -> 120 runs * 3 min (laptop) = 378 min  -> 6.3 stunden
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     """
 
     print("Estimated runtime in minutes:")
-    runtime = (grid_resolution*10)*3.15 + (grid_resolution*10)*3.15 * zooms
+    runtime = (grid_resolution*10)*2 + (grid_resolution*10)*3.15 * zooms
     print(runtime)
 
     min_index = 0    
@@ -46,8 +46,8 @@ if __name__ == '__main__':
 
 
     #create parameter_list_full
-    parameter_list = pd.read_excel('Parameters_to_be_analysed.xlsx', sheet_name= "Complete")
-    #parameter_list = pd.read_excel('Parameters_to_be_analysed.xlsx', sheet_name= "Part")
+    #parameter_list = pd.read_excel('Parameters_to_be_analysed.xlsx', sheet_name= "Complete")
+    parameter_list = pd.read_excel('Parameters_to_be_analysed.xlsx', sheet_name= "Part")
     
     params_list = []
     
@@ -128,10 +128,10 @@ if __name__ == '__main__':
             
             electricity_prices = ess.agents["Government"]["data"]["Electricity_cost"]
             
-            installed_power_coal = ess.agents["Producer_Coal"]["data"]["Installed_power"]
-            installed_power_gas = ess.agents["Producer_Gas_CC"]["data"]["Installed_power"] + ess.agents["Producer_Gas_CT"]["data"]["Installed_power"]
-            installed_power_solar = ess.agents["Producer_Solar"]["data"]["Installed_power"]
-            installed_power_wind = ess.agents["Producer_Wind"]["data"]["Installed_power"]
+            installed_power_coal = ess.agents["Coal"]["data"]["Installed_power"]
+            installed_power_gas = ess.agents["Gas_CC"]["data"]["Installed_power"] + ess.agents["Gas_CT"]["data"]["Installed_power"]
+            installed_power_solar = ess.agents["Solar"]["data"]["Installed_power"]
+            installed_power_wind = ess.agents["Wind"]["data"]["Installed_power"]
             
             elec_prices = pd.concat([elec_prices, electricity_prices], ignore_index = True, axis=1)
             
