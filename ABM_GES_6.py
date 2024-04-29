@@ -28,20 +28,21 @@ class ESS:
                 ,solar_max	=   16740
                 ,wind_max	=   9782
                 
-                ,coal_slope	  =  -5.042422
-                ,coal_shift	  =  1.592889
+                ,coal_slope	  =  -5.06
+                ,coal_shift	  =  1.59
                 
-                ,gas_ct_slope=	-4
-                ,gas_ct_shift=	1.2
+                ,gas_ct_slope=	-2.55
+                ,gas_ct_shift=	0.62
                 
-                ,gas_cc_slope=	-1
+                ,gas_cc_slope=	-1.01
                 ,gas_cc_shift=	0.624
                 
-                ,solar_slope	=-2.41616
-                ,solar_shift	=1.294222
+                ,solar_slope	=-2.33
+                ,solar_shift	=1.24
                 
-                ,wind_slope	 =   -3.054543
-                ,wind_shift	 =   1.55
+                ,wind_slope	 =   -2.42
+                ,wind_shift	 =   1.4
+                 
                 
                 ,battery_lifetime = 10
                 ,battery_slope = -3
@@ -166,8 +167,8 @@ class ESS:
         self.Governmental_funding = governmental_funding
         
         #import LIBOR index list
-        self.LIBOR_index = pd.read_excel("LIBOR.xlsx", sheet_name= "2009-2050")
-        #self.LIBOR_index = pd.read_excel("LIBOR.xlsx", sheet_name= "2009-2050 Crisis")
+        #self.LIBOR_index = pd.read_excel("LIBOR.xlsx", sheet_name= "2009-2050")
+        self.LIBOR_index = pd.read_excel("LIBOR.xlsx", sheet_name= "2009-2050 Crisis")
         
         #import risk markup list
         self.Risk_markup = pd.read_excel("Risk_markup.xlsx")
@@ -692,17 +693,17 @@ class ESS:
                 #safe risk markups and after crisis set riskmarkup back to normal
                 #self.Risk_markup["Production Coal"] = 0.04
                 #self.Risk_markup["Production Gas"] = 0.03
-                #self.Risk_markup["Production Solar"] = 0
+                #self.Risk_markup["Production Solar"] = 0 
                 #self.Risk_markup["Production Wind"] = 0
             
             
                 #strategy 2: increase maximum investment
                 #self.coal_max = 6090
-                #self.gas_ct_max = 2376 
+                #self.gas_ct_max = 2376
                 #self.gas_cc_max = 4653
                 #self.solar_max = 16740*2
                 #self.wind_max = 9782*2 
-            
+                
             
                 #strategy 3: increase funding
                 #self.governmental_funding = 25
@@ -710,10 +711,11 @@ class ESS:
                 
                 
                 #strategy 4: increase storage
-                #self.battery_max = 10000*2
-                #self.hydrogen_max = 250000*2
-                #self.battery_shift = 2.5
+                #self.battery_max = 10000*1.5
+                #self.hydrogen_max = 250000*1.5
+                #self.battery_shift = 3
                 #self.hydrogen_shift = 1.5
+
 
 
                 
@@ -767,10 +769,10 @@ class ESS:
                 
                 
                 #strategy 4: increase storage
-                #self.battery_max = 10000
-                #self.hydrogen_max = 250000
-                #self.battery_shift = 2.5
-                #self.hydrogen_shift = 1
+                self.battery_max = 10000
+                self.hydrogen_max = 250000
+                self.battery_shift = 2.5
+                self.hydrogen_shift = 1
     
     
             #   ---Run year as prognosis---
@@ -2845,7 +2847,7 @@ if __name__ == '__main__':
 
     #init class
     start_year=2009
-    end_year=2021
+    end_year=2050
     
     plot_data = True
     
