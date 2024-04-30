@@ -19,8 +19,8 @@ if __name__ == '__main__':
     end_year=2021
     
     #parameters to be analized in excel
-    grid_resolution = 20
-    deviation = 0.3
+    grid_resolution = 22
+    deviation = 0.5
     zooms = 0
 
     """

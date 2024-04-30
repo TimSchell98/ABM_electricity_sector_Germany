@@ -134,9 +134,6 @@ class ESS:
         
         #if a run has to be run again, the seed list can be imported, if not the seed list is safed, to ensure the run can be run again
         self.shuffle_seeds = []
-        
-        #cogeneration funding for gas power plants
-        self.cogeneration_funding = cogeneration_funding
                 
         #coal specs
         #Co2 emissions from one MWh thermal of coal, Umweltbundesamt
@@ -163,12 +160,15 @@ class ESS:
         self.solar_lifetime = solar_lifetime
         self.wind_lifetime = wind_lifetime
 
+        #cogeneration funding for gas power plants
+        self.cogeneration_funding = cogeneration_funding
+
         #governmental funding for renewable energy
-        self.Governmental_funding = governmental_funding
+        self.governmental_funding = governmental_funding
         
         #import LIBOR index list
-        #self.LIBOR_index = pd.read_excel("LIBOR.xlsx", sheet_name= "2009-2050")
-        self.LIBOR_index = pd.read_excel("LIBOR.xlsx", sheet_name= "2009-2050 Crisis")
+        self.LIBOR_index = pd.read_excel("LIBOR.xlsx", sheet_name= "2009-2050")
+        #self.LIBOR_index = pd.read_excel("LIBOR.xlsx", sheet_name= "2009-2050 Crisis")
         
         #import risk markup list
         self.Risk_markup = pd.read_excel("Risk_markup.xlsx")
@@ -311,11 +311,11 @@ class ESS:
         #TODo: producer 1 zu coal etc
 
         #calculate deprication of every agent
-        self.coal_deprication = self.agents["Coal"]["data"].loc[0, 'Installed_power_initial']/self.coal_lifetime
-        self.gas_ct_deprication = self.agents["Gas_CT"]["data"].loc[0, 'Installed_power_initial']/self.gas_lifetime
-        self.gas_cc_deprication = self.agents["Gas_CC"]["data"].loc[0, 'Installed_power_initial']/self.gas_lifetime
-        self.solar_deprication = self.agents["Solar"]["data"].loc[0, 'Installed_power_initial']/self.solar_lifetime
-        self.wind_deprication = self.agents["Wind"]["data"].loc[0, 'Installed_power_initial']/self.wind_lifetime
+        self.coal_deprication   = self.agents["Coal"]["data"].loc[0, 'Installed_power_initial']     /self.coal_lifetime
+        self.gas_ct_deprication = self.agents["Gas_CT"]["data"].loc[0, 'Installed_power_initial']   /self.gas_lifetime
+        self.gas_cc_deprication = self.agents["Gas_CC"]["data"].loc[0, 'Installed_power_initial']   /self.gas_lifetime
+        self.solar_deprication  = self.agents["Solar"]["data"].loc[0, 'Installed_power_initial']    /self.solar_lifetime
+        self.wind_deprication   = self.agents["Wind"]["data"].loc[0, 'Installed_power_initial']     /self.wind_lifetime
 
     def get_agent_list(self):
         """
@@ -596,8 +596,8 @@ class ESS:
         self.biomass_income_total = ((network.buses_t.marginal_price["Main_bus"] - self.agents["Biomass"]["data"].loc[self.timestep-1, "Marginal_cost"]) * network.generators_t.p["Biomass"]).sum()
 
         #gas income: addition of cogeneration funding
-        self.gas_ct_income_total = ((network.buses_t.marginal_price["Main_bus"] - self.agents["Gas_CT"]["data"].loc[self.timestep-1, "Marginal_cost"] + self.cogeneration_funding) * network.generators_t.p["Gas_CT"]).sum()
-        self.gas_cc_income_total = ((network.buses_t.marginal_price["Main_bus"] - self.agents["Gas_CC"]["data"].loc[self.timestep-1, "Marginal_cost"]) * network.generators_t.p["Gas_CC"]).sum()
+        self.gas_ct_income_total = ((network.buses_t.marginal_price["Main_bus"] - self.agents["Gas_CT"]["data"].loc[self.timestep-1, "Marginal_cost"]+ self.cogeneration_funding) * network.generators_t.p["Gas_CT"]).sum()
+        self.gas_cc_income_total = ((network.buses_t.marginal_price["Main_bus"] - self.agents["Gas_CC"]["data"].loc[self.timestep-1, "Marginal_cost"]+ self.cogeneration_funding) * network.generators_t.p["Gas_CC"]).sum()
 
         #calculate generation profile of coal, gas ct and gas cc 
         #if installed power is 0 profile will be nan -> change to 0
@@ -664,11 +664,11 @@ class ESS:
         data_generated_power = {'Coal': [0], 'Gas_CT': [0], 'Gas_CC': [0], 'Nuclear': [0], 'Solar': [0], 'Wind': [0], 'Hydro': [0], 'Biomass': [0], 'Oil': [0] }
         self.generated_power = pd.DataFrame(data = data_generated_power)
         
-        #calculate estimated run time
+        #calculate estimated run time, Laptop 9 seconds per simulation
         if self.prognosis  == True:
-            estimated_run_time = (self.end_year-self.start_year)*2*17.5/60
+            estimated_run_time = (self.end_year-self.start_year)*2*9/60
         if self.prognosis == False:
-            estimated_run_time = (self.end_year-self.start_year)*17.5/60
+            estimated_run_time = (self.end_year-self.start_year)*9/60
         
         print("\nEstimated runtime in minutes:")
         print(estimated_run_time)
@@ -706,7 +706,10 @@ class ESS:
                 
             
                 #strategy 3: increase funding
+                #governmental funding normal: 0
                 #self.governmental_funding = 25
+                
+                #cogeneration funding normal: 35
                 #self.cogeneration_funding = 60
                 
                 
@@ -715,21 +718,15 @@ class ESS:
                 #self.hydrogen_max = 250000*1.5
                 #self.battery_shift = 3
                 #self.hydrogen_shift = 1.5
-
-
-
                 
                 #strategy 5: decrease demand
-                #self.Electricity_demand.iloc[self.timestep,0] = self.Electricity_demand.iloc[self.timestep,0] * 0.8
                 #self.Electricity_demand.loc[self.timestep,"Industry demand"] = self.Electricity_demand.loc[self.timestep,"Industry demand"] * 0.8
                 #self.Electricity_demand.loc[self.timestep,"Commerce demand"] = self.Electricity_demand.loc[self.timestep,"Commerce demand"] * 0.8
                 #self.Electricity_demand.loc[self.timestep,"Private demand"] = self.Electricity_demand.loc[self.timestep,"Private demand"] * 0.8               
                 
-                
+                """
                 #strategy 6:increase lifetime
-
-            """
-            if self.time == 2033:
+            if self.time == 2029:
                 agent_names = ["Coal", "Gas_CT", "Gas_CC", "Solar", "Wind"]
                 
                 #loop throu agent_names
@@ -737,16 +734,24 @@ class ESS:
                 
                     # Loop through the investments dataframe
                     for i in range(len(self.agents[producer_name]['Investments'])):
-                
-                        # Check if power plant is still active
-                        if self.agents[producer_name]['Investments'].loc[i, 'Status'] == True and self.agents[producer_name]['Investments'].loc[i, 'Lifetime'] < 5:
-                
-                            # Subtract one year from lifetime
-                            self.agents[producer_name]['Investments'].loc[i, 'Lifetime'] += 3
-            """
-        
+
+                        # Check if power plant lifetime is under 6
+                        if self.agents[producer_name]['Investments'].loc[i, 'Lifetime'] < 6 and self.agents[producer_name]['Investments'].loc[i, 'Status'] == True:   
+     
+                            # Add 5 years to lifetime
+                            self.agents[producer_name]['Investments'].loc[i, 'Lifetime'] += 5
+                            
+                            
+                #calculate deprication of every agent
+                self.coal_deprication   = self.agents["Coal"]["data"].loc[0, 'Installed_power_initial']     /(self.coal_lifetime*2)
+                self.gas_ct_deprication = self.agents["Gas_CT"]["data"].loc[0, 'Installed_power_initial']   /(self.gas_lifetime*2)
+                self.gas_cc_deprication = self.agents["Gas_CC"]["data"].loc[0, 'Installed_power_initial']   /(self.gas_lifetime*2)
+                self.solar_deprication  = self.agents["Solar"]["data"].loc[0, 'Installed_power_initial']    /(self.solar_lifetime*2)
+                self.wind_deprication   = self.agents["Wind"]["data"].loc[0, 'Installed_power_initial']     /(self.wind_lifetime*2)           
+                """
+    
             #reset strategies
-            if self.time == 2038:
+            if self.time >= 2038:
                 print("\nCrisis ended")
                 
                 #strategy 1: governmental securities
@@ -764,16 +769,26 @@ class ESS:
                 
                 
                 #strategy 3: increase funding
+                #governmental funding normal: 0
                 #self.governmental_funding = 0
+                #cogeneration funding normal: 35
                 #self.cogeneration_funding = 35
                 
                 
                 #strategy 4: increase storage
-                self.battery_max = 10000
-                self.hydrogen_max = 250000
-                self.battery_shift = 2.5
-                self.hydrogen_shift = 1
+                #self.battery_max = 10000
+                #self.hydrogen_max = 250000
+                #self.battery_shift = 2.5
+                #self.hydrogen_shift = 1
     
+                """
+                #calculate deprication of every agent
+                self.coal_deprication   = self.agents["Coal"]["data"].loc[0, 'Installed_power_initial']     /self.coal_lifetime
+                self.gas_ct_deprication = self.agents["Gas_CT"]["data"].loc[0, 'Installed_power_initial']   /self.gas_lifetime
+                self.gas_cc_deprication = self.agents["Gas_CC"]["data"].loc[0, 'Installed_power_initial']   /self.gas_lifetime
+                self.solar_deprication  = self.agents["Solar"]["data"].loc[0, 'Installed_power_initial']    /self.solar_lifetime
+                self.wind_deprication   = self.agents["Wind"]["data"].loc[0, 'Installed_power_initial']     /self.wind_lifetime 
+                """
     
             #   ---Run year as prognosis---
             
@@ -1016,16 +1031,6 @@ class ESS:
             #initial installed power is reduced by a fixed amount every year
             self.agents["Coal"]['data'].loc[self.timestep, 'Installed_power_initial'] = self.agents["Coal"]["data"].loc[self.timestep-1, 'Installed_power_initial'] - self.coal_deprication
         
-        
-            #strategy 8 increase lifetime:
-            #if self.time >= 2033 and self.time <= 2036:
-        
-                #self.agents["Coal"]['data'].loc[self.timestep, 'Installed_power_initial'] = self.agents["Coal"]["data"].loc[self.timestep-1, 'Installed_power_initial']
-            
-            #else:
-                
-                #self.agents["Coal"]['data'].loc[self.timestep, 'Installed_power_initial'] = self.agents["Coal"]["data"].loc[self.timestep-1, 'Installed_power_initial'] - self.coal_deprication            
-                
         else: 
             self.agents["Coal"]["data"].loc[self.timestep, 'Installed_power_initial'] = 0 
         
@@ -1312,15 +1317,6 @@ class ESS:
             #initial installed power is reduced by a fixed amount every year
             self.agents["Gas_CT"]['data'].loc[self.timestep, 'Installed_power_initial'] = self.agents["Gas_CT"]["data"].loc[self.timestep-1, 'Installed_power_initial'] - self.gas_ct_deprication
         
-            #strategy 8 increase lifetime:
-            #if self.time >= 2033 and self.time <= 2036:
-        
-                #self.agents["Gas_CT"]['data'].loc[self.timestep, 'Installed_power_initial'] = self.agents["Gas_CT"]["data"].loc[self.timestep-1, 'Installed_power_initial']
-            
-            #else:
-                
-                #self.agents["Gas_CT"]['data'].loc[self.timestep, 'Installed_power_initial'] = self.agents["Gas_CT"]["data"].loc[self.timestep-1, 'Installed_power_initial'] - self.gas_ct_deprication           
-                
         else: 
             self.agents["Gas_CT"]["data"].loc[self.timestep, 'Installed_power_initial'] = 0 
         
@@ -1587,15 +1583,6 @@ class ESS:
             #initial installed power is reduced by a fixed amount every year
             self.agents["Gas_CC"]['data'].loc[self.timestep, 'Installed_power_initial'] = self.agents["Gas_CC"]["data"].loc[self.timestep-1, 'Installed_power_initial'] - self.gas_cc_deprication
         
-            #strategy 8 increase lifetime:
-            #if self.time >= 2033 and self.time <= 2036:
-        
-                #self.agents["Gas_CC"]['data'].loc[self.timestep, 'Installed_power_initial'] = self.agents["Gas_CC"]["data"].loc[self.timestep-1, 'Installed_power_initial']
-            
-            #else:
-                
-                #self.agents["Gas_CC"]['data'].loc[self.timestep, 'Installed_power_initial'] = self.agents["Gas_CC"]["data"].loc[self.timestep-1, 'Installed_power_initial'] - self.gas_cc_deprication           
-                
         else: 
             self.agents["Gas_CC"]["data"].loc[self.timestep, 'Installed_power_initial'] = 0 
         
@@ -1818,7 +1805,7 @@ class ESS:
         total_energy = [value * 100 for value in self.pv_generation_profile]
         
         #calculate outlook of profit
-        income_outlook = sum(total_energy * (self.marginal_costs-self.agents["Solar"]["data"].loc[self.timestep-1, "Marginal_cost"]))
+        income_outlook = sum(total_energy * (self.marginal_costs-self.agents["Solar"]["data"].loc[self.timestep-1, "Marginal_cost"]+self.governmental_funding))
     
         #calculate interest rate 
         interest_rate = float((self.agents["Bank"]["data"].loc[self.timestep-1, "Interest_rate"] + self.Risk_markup["Production Solar"]).iloc[0])
@@ -1905,18 +1892,10 @@ class ESS:
         print("\nSolar called")
         
         #check if initial installed power is higher than 0
-        if self.agents["Solar"]["data"].loc[self.timestep-1, 'Installed_power_initial'] - self.solar_deprication  > 0:
+        if self.agents["Solar"]["data"].loc[self.timestep-1, 'Installed_power_initial']  > 0:
             #initial installed power is reduced by a fixed amount every year
             self.agents["Solar"]['data'].loc[self.timestep, 'Installed_power_initial'] = self.agents["Solar"]["data"].loc[self.timestep-1, 'Installed_power_initial'] - self.solar_deprication
         
-            #strategy 8 increase lifetime:
-            #if self.time >= 2033 and self.time <= 2036:
-        
-                #self.agents["Solar"]['data'].loc[self.timestep, 'Installed_power_initial'] = self.agents["Solar"]["data"].loc[self.timestep-1, 'Installed_power_initial']
-            
-            #else:
-                
-                #self.agents["Solar"]['data'].loc[self.timestep, 'Installed_power_initial'] = self.agents["Solar"]["data"].loc[self.timestep-1, 'Installed_power_initial'] - self.solar_deprication           
         else: 
             self.agents["Solar"]["data"].loc[self.timestep, 'Installed_power_initial'] = 0
         
@@ -1956,9 +1935,13 @@ class ESS:
             #if yes set load to 1
             self.agents["Solar"]["data"].loc[self.timestep, "Load"] = 1
         
+        
         #investment function
+        #calculate total energy generation
+        total_energy = [value * 100 for value in self.pv_generation_profile]
+        
         #calculate outlook of profit
-        income_outlook = sum(([value * 100 for value in self.pv_generation_profile]) * (self.marginal_costs-self.agents["Solar"]["data"].loc[self.timestep-1, "Marginal_cost"]))
+        income_outlook = sum(total_energy * (self.marginal_costs-self.agents["Solar"]["data"].loc[self.timestep-1, "Marginal_cost"]+self.governmental_funding))
 
         #calculate interest rate 
         interest_rate = float((self.agents["Bank"]["data"].loc[self.timestep-1, "Interest_rate"] + self.Risk_markup["Production Solar"]).iloc[0])
@@ -2063,7 +2046,7 @@ class ESS:
         total_energy = [value * 100 for value in self.wind_generation_profile]
         
         #calculate outlook of profit
-        income_outlook = sum(total_energy * (self.marginal_costs-self.agents["Wind"]["data"].loc[self.timestep-1, "Marginal_cost"]))
+        income_outlook = sum(total_energy * (self.marginal_costs-self.agents["Wind"]["data"].loc[self.timestep-1, "Marginal_cost"] + self.governmental_funding))
     
         #calculate interest rate 
         interest_rate = float((self.agents["Bank"]["data"].loc[self.timestep-1, "Interest_rate"] + self.Risk_markup["Production Wind"]).iloc[0])
@@ -2151,19 +2134,10 @@ class ESS:
         print("\nWind called")
         
         #check if initial installed power is higher than 0
-        if self.agents["Wind"]["data"].loc[self.timestep-1, 'Installed_power_initial'] - self.coal_deprication > 0:
+        if self.agents["Wind"]["data"].loc[self.timestep-1, 'Installed_power_initial'] > 0:
             #initial installed power is reduced by a fixed amount every year
-            self.agents["Wind"]['data'].loc[self.timestep, 'Installed_power_initial'] = self.agents["Wind"]["data"].loc[self.timestep-1, 'Installed_power_initial'] - self.coal_deprication
+            self.agents["Wind"]['data'].loc[self.timestep, 'Installed_power_initial'] = self.agents["Wind"]["data"].loc[self.timestep-1, 'Installed_power_initial'] - self.wind_deprication
         
-            #strategy 8 increase lifetime:
-            #if self.time >= 2033 and self.time <= 2036:
-        
-                #elf.agents["Wind"]['data'].loc[self.timestep, 'Installed_power_initial'] = self.agents["Wind"]["data"].loc[self.timestep-1, 'Installed_power_initial']
-            
-            #else:
-                
-                #self.agents["Wind"]['data'].loc[self.timestep, 'Installed_power_initial'] = self.agents["Wind"]["data"].loc[self.timestep-1, 'Installed_power_initial'] - self.wind_deprication           
-       
         else: 
             self.agents["Wind"]["data"].loc[self.timestep, 'Installed_power_initial'] = 0        
         
@@ -2214,7 +2188,7 @@ class ESS:
         total_energy = [value * 100 for value in self.wind_generation_profile]
         
         #calculate outlook of profit
-        income_outlook = sum(total_energy * (self.marginal_costs-self.agents["Wind"]["data"].loc[self.timestep-1, "Marginal_cost"]))
+        income_outlook = sum(total_energy * (self.marginal_costs-self.agents["Wind"]["data"].loc[self.timestep-1, "Marginal_cost"]+self.governmental_funding))
     
         #calculate interest rate 
         interest_rate = float((self.agents["Bank"]["data"].loc[self.timestep-1, "Interest_rate"] + self.Risk_markup["Production Wind"]).iloc[0])
@@ -2849,7 +2823,7 @@ if __name__ == '__main__':
     start_year=2009
     end_year=2050
     
-    plot_data = True
+    plot_data = False
     
     ess = ESS(start_year=start_year,end_year=end_year)
     
