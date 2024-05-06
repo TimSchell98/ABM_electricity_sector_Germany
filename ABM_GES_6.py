@@ -28,20 +28,17 @@ class ESS:
                 ,solar_max	=   16740
                 ,wind_max	=   9782
                 
-                ,coal_slope	  =  -5.06
-                ,coal_shift	  =  1.59
-                
-                ,gas_ct_slope=	-2.55
-                ,gas_ct_shift=	0.62
-                
+                ,coal_slope=	-5.11
+                ,coal_shift=	1.59
+                ,gas_ct_slope=	-2.11
+                ,gas_ct_shift=	0.84
                 ,gas_cc_slope=	-1.01
-                ,gas_cc_shift=	0.624
-                
-                ,solar_slope	=-2.33
-                ,solar_shift	=1.24
-                
-                ,wind_slope	 =   -2.42
-                ,wind_shift	 =   1.4
+                ,gas_cc_shift=	0.61
+                ,solar_slope=	-2.35
+                ,solar_shift=	1.24
+                ,wind_slope=	-2.4
+                ,wind_shift=	1.37
+
                  
                 
                 ,battery_lifetime = 10

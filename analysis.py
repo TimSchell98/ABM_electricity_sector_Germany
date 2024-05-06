@@ -19,8 +19,8 @@ if __name__ == '__main__':
     end_year=2021
     
     #parameters to be analized in excel
-    grid_resolution = 22
-    deviation = 0.5
+    grid_resolution = 40
+    deviation = 0.4
     zooms = 0
 
     """
@@ -30,6 +30,14 @@ if __name__ == '__main__':
     -> 120 runs * 3 min (laptop) = 378 min  -> 6.3 stunden
     
     total time = variables * grid resolution * 3.15 (laptop) * zooms
+    
+    Freitag auf samstag morgen: 20 Stunden
+    deviation: 0.75, Zooms 4: Variablen 10
+    10 * x * 4 * 3 = 20 stunden -> grid resolutin: 10
+    
+    wochenende: mögliche zeit: 45 Stunden
+    -> 8 variablen * 4 Zooms -> 28 grid resolution
+    
     
     
     """
