@@ -164,8 +164,8 @@ class ESS:
         self.governmental_funding = governmental_funding
         
         #import LIBOR index list
-        self.LIBOR_index = pd.read_excel("LIBOR.xlsx", sheet_name= "2009-2050")
-        #self.LIBOR_index = pd.read_excel("LIBOR.xlsx", sheet_name= "2009-2050 Crisis")
+        #self.LIBOR_index = pd.read_excel("LIBOR.xlsx", sheet_name= "2009-2050")
+        self.LIBOR_index = pd.read_excel("LIBOR.xlsx", sheet_name= "2009-2050 Crisis")
         
         #import risk markup list
         self.Risk_markup = pd.read_excel("Risk_markup.xlsx")
@@ -688,8 +688,8 @@ class ESS:
                 #strategy 1: governmental securities
                 #reduce risk markup -> reduces shift
                 #safe risk markups and after crisis set riskmarkup back to normal
-                #self.Risk_markup["Production Coal"] = 0.04
-                #self.Risk_markup["Production Gas"] = 0.03
+                #self.Risk_markup["Production Coal"] = 0.03
+                #self.Risk_markup["Production Gas"] = 0.02
                 #self.Risk_markup["Production Solar"] = 0 
                 #self.Risk_markup["Production Wind"] = 0
             
@@ -711,15 +711,15 @@ class ESS:
                 
                 
                 #strategy 4: increase storage
-                #self.battery_max = 10000*1.5
-                #self.hydrogen_max = 250000*1.5
-                #self.battery_shift = 3
-                #self.hydrogen_shift = 1.5
+                self.battery_max = 10000*2
+                self.hydrogen_max = 250000*2
+                self.battery_shift = 5
+                self.hydrogen_shift = 2.5
                 
                 #strategy 5: decrease demand
-                #self.Electricity_demand.loc[self.timestep,"Industry demand"] = self.Electricity_demand.loc[self.timestep,"Industry demand"] * 0.8
-                #self.Electricity_demand.loc[self.timestep,"Commerce demand"] = self.Electricity_demand.loc[self.timestep,"Commerce demand"] * 0.8
-                #self.Electricity_demand.loc[self.timestep,"Private demand"] = self.Electricity_demand.loc[self.timestep,"Private demand"] * 0.8               
+                #self.Electricity_demand.loc[self.timestep,"Industry demand"] = self.Electricity_demand.loc[self.timestep,"Industry demand"] * 0.95
+                #self.Electricity_demand.loc[self.timestep,"Commerce demand"] = self.Electricity_demand.loc[self.timestep,"Commerce demand"] * 0.95
+                #self.Electricity_demand.loc[self.timestep,"Private demand"] = self.Electricity_demand.loc[self.timestep,"Private demand"] * 0.95             
                 
                 """
                 #strategy 6:increase lifetime
@@ -773,10 +773,10 @@ class ESS:
                 
                 
                 #strategy 4: increase storage
-                #self.battery_max = 10000
-                #self.hydrogen_max = 250000
-                #self.battery_shift = 2.5
-                #self.hydrogen_shift = 1
+                self.battery_max = 10000
+                self.hydrogen_max = 250000
+                self.battery_shift = 2.5
+                self.hydrogen_shift = 1
     
                 """
                 #calculate deprication of every agent
