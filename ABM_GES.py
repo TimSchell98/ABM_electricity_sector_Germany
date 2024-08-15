@@ -4,7 +4,7 @@ Created on Sun Jun 25 12:36:34 2023
 
 @author: Tim Schell
 
-Agent based modell of the electricity generation system of Germany.
+Agent based modell (ABM) of the Germany electricty sector (GES).
 """
 
 import time
@@ -60,6 +60,7 @@ class ESS:
                 ,battery_block_size = 100
                 ,hydrogen_block_size = 10000
                  ):
+        
         """
         Initiate all the variables and lists
         """
@@ -164,39 +165,42 @@ class ESS:
         self.governmental_funding = governmental_funding
         
         #import LIBOR index list
+        #reference run with no crisis
         #self.LIBOR_index = pd.read_excel("LIBOR.xlsx", sheet_name= "2009-2050")
-        self.LIBOR_index = pd.read_excel("LIBOR.xlsx", sheet_name= "2009-2050 Crisis")
+        
+        #crisis run with financial crisis
+        self.LIBOR_index = pd.read_excel("Data/LIBOR.xlsx", sheet_name= "2009-2050 Crisis")
         
         #import risk markup list
-        self.Risk_markup = pd.read_excel("Risk_markup.xlsx")
+        self.Risk_markup = pd.read_excel("Data/Risk_markup.xlsx")
         self.Risk_markup_init = self.Risk_markup
         
         #import investment costs as CAPEX
-        self.Capex = pd.read_excel("Capex_nrel.xlsx")
+        self.Capex = pd.read_excel("Data/CAPEX.xlsx")
         
         #define storage specs
         self.battery_lifetime = battery_lifetime
         self.hydrogen_lifetime = hydrogen_lifetime
         
         #import co2 certificate costs and ressource cost as lists
-        self.Co2_certificate_costs = pd.read_excel("co2_certificate_costs.xlsx")
-        self.coal_costs = pd.read_excel("ressource_costs.xlsx", sheet_name = "coal")
-        self.gas_costs = pd.read_excel("ressource_costs.xlsx", sheet_name = "gas")
-        self.uranium_costs = pd.read_excel("ressource_costs.xlsx", sheet_name = "uranium")
+        self.Co2_certificate_costs = pd.read_excel("Data/CO2_certificate_costs.xlsx")
+        self.coal_costs = pd.read_excel("Data/Ressource_costs.xlsx", sheet_name = "coal")
+        self.gas_costs = pd.read_excel("Data/Ressource_costs.xlsx", sheet_name = "gas")
+        self.uranium_costs = pd.read_excel("Data/Ressource_costs.xlsx", sheet_name = "uranium")
 
         #import operational costs
-        self.Operational_costs = pd.read_excel("Operational_costs.xlsx", sheet_name = "Variable O and M costs")
+        self.Operational_costs = pd.read_excel("Data/Operational_costs.xlsx", sheet_name = "Variable O and M costs")
         self.Operational_costs = self.Operational_costs.iloc[3]
 
         #import fix costs
-        self.Fix_costs = pd.read_excel("Operational_costs.xlsx", sheet_name = "Fixed O and M costs")
+        self.Fix_costs = pd.read_excel("Data/Operational_costs.xlsx", sheet_name = "Fixed O and M costs")
         self.Fix_costs = self.Fix_costs.iloc[4]
         
         #import tax and network charge 2009 - 2021
-        self.tax = pd.read_excel("Strompreis.xlsx")
+        self.tax = pd.read_excel("Data/Electricity_prices.xlsx")
         
         #import electricity demand
-        self.Electricity_demand = pd.read_excel("Power demand.xlsx")
+        self.Electricity_demand = pd.read_excel("Data/Power_demand.xlsx")
         
         #initialize the loans dataframe to store the loans given
         loans = {'Agent_name': [0], 'Active': [True], 'Runtime': [0], 'Amount': [0], 'Interest_rate': [0], 'Payback': [0]}
@@ -206,7 +210,7 @@ class ESS:
         self.Fallback_generator_supply = []
         
         #oil marginal cost
-        self.oil_marginal_cost = pd.read_excel("oil_cost.xlsx")
+        self.oil_marginal_cost = pd.read_excel("Data/Ressource_costs.xlsx", sheet_name= "oil")
         
         #block size of new power plants
         self.coal_block_size = coal_block_size
@@ -232,11 +236,9 @@ class ESS:
         This function defines all the agents with the corresponding varibles
         Also the values of the varibles of the first timestep are initilized
         """
-        
-        #ToDo: Muss Braunkohle auch als agent rein? die Daten zu steinkohle sind schon sehr anders
 
         #import agents names, functions and initial values
-        agents_list = pd.read_excel("initial_values.xlsx")
+        agents_list = pd.read_excel("Data/Initial_values_agents.xlsx")
         self.agents_list = agents_list
 
         #iterate through the data and add agents dynamically
@@ -305,8 +307,6 @@ class ESS:
         #create function name list for the create_agent_list randomizing function, prognosis
         self.agent_list_prognosis = [self.coal_prognosis, self.gas_ct_prognosis, self.gas_cc_prognosis, self.solar_prognosis, self.wind_prognosis, self.storage_prognosis]
 
-        #TODo: producer 1 zu coal etc
-
         #calculate deprication of every agent
         self.coal_deprication   = self.agents["Coal"]["data"].loc[0, 'Installed_power_initial']     /self.coal_lifetime
         self.gas_ct_deprication = self.agents["Gas_CT"]["data"].loc[0, 'Installed_power_initial']   /self.gas_lifetime
@@ -334,23 +334,6 @@ class ESS:
         This function creates a order in which the agents are called
         At first the Producers are called in a random order, then the consumers are called in a random order
         """      
-
-        
-        #ToDo: Implement functionality to save the order or the randomizing key to run the same order again.
-        """
-        # Set the random seed if provided
-        if seed is not None:
-            random.seed(seed)
-        else:
-            #Safe these seeds and implement a functionality with which the list of seeds can be used here.
-            random_seed = random.randint(0, 1000)
-            random.seed(random_seed)
-       
-        random.shuffle(producer_list, random=random.Random(producer_seed))
-        random.shuffle(consumer_list, random=random.Random(consumer_seed))
-        self.shuffle_seeds.append((producer_seed, consumer_seed))
-        
-        """
         
         #shuffle the lists
         random.shuffle(self.producer_list)
@@ -380,10 +363,8 @@ class ESS:
         """
         This function calculates the y value of a sigmoid function given the x value.
         """
-        # Compute the y value using the sigmoid function
         
         y = 1 / (1 + np.exp(slope * (x + shift)))
-
         
         return y
     
@@ -439,20 +420,20 @@ class ESS:
         This function imports the profiles that are used in the PyPSA function
         """
         #Load PV profile
-        pv_profile = pd.read_excel('Generations_profile.xlsx', sheet_name='2017 Generationsprofil Solar')
+        pv_profile = pd.read_excel('Data/Generation_profile_solar_wind.xlsx', sheet_name='2017 Generationsprofil Solar')
         
         self.pv_generation_profile = pv_profile.iloc[:, 0].tolist()
         #pv_profile[2:300].plot()
         plt.show()
 
         #Load wind profile
-        wind_profile = pd.read_excel('Generations_profile.xlsx', sheet_name='2017 Generationsprofil wind')
+        wind_profile = pd.read_excel('Data/Generation_profile_solar_wind.xlsx', sheet_name='2017 Generationsprofil wind')
         self.wind_generation_profile = wind_profile.iloc[:, 0].tolist()
         #wind_profile[2:300].plot()
         plt.show()
 
         #Load load profile
-        load_profile_df = pd.read_excel('load_data_smard.xlsx')
+        load_profile_df = pd.read_excel('Data/Load_profile.xlsx')
         self.load_factor_profile = load_profile_df.iloc[:, 0].tolist()
         #load_profile_df[2:300].plot()
         plt.show()
@@ -462,7 +443,7 @@ class ESS:
         self.biomass_profile= [0.6] * 8759
         
         #create p_min profiles for gas
-        self.gas_cc_profile = pd.read_excel('gas profile.xlsx', sheet_name= "cc")
+        self.gas_cc_profile = pd.read_excel('Data/Gas_generation_profile.xlsx', sheet_name= "cc")
         #self.gas_cc_profile = self.gas_cc_profile['KWK profile'].tolist()
         self.gas_cc_profile = self.gas_cc_profile['KWK profile']
 
@@ -693,7 +674,6 @@ class ESS:
                 #self.Risk_markup["Production Solar"] = 0 
                 #self.Risk_markup["Production Wind"] = 0
             
-            
                 #strategy 2: increase maximum investment
                 #self.coal_max = 6090
                 #self.gas_ct_max = 2376
@@ -701,7 +681,6 @@ class ESS:
                 #self.solar_max = 16740*2
                 #self.wind_max = 9782*2 
                 
-            
                 #strategy 3: increase funding
                 #governmental funding normal: 0
                 #self.governmental_funding = 25
@@ -711,10 +690,10 @@ class ESS:
                 
                 
                 #strategy 4: increase storage
-                self.battery_max = 10000*2
-                self.hydrogen_max = 250000*2
-                self.battery_shift = 5
-                self.hydrogen_shift = 2.5
+                #self.battery_max = 10000*2
+                #self.hydrogen_max = 250000*2
+                #self.battery_shift = 5
+                #self.hydrogen_shift = 2.5
                 
                 #strategy 5: decrease demand
                 #self.Electricity_demand.loc[self.timestep,"Industry demand"] = self.Electricity_demand.loc[self.timestep,"Industry demand"] * 0.95
@@ -723,20 +702,20 @@ class ESS:
                 
                 """
                 #strategy 6:increase lifetime
-            if self.time == 2029:
-                agent_names = ["Coal", "Gas_CT", "Gas_CC", "Solar", "Wind"]
+                if self.time == 2029:
+                    agent_names = ["Coal", "Gas_CT", "Gas_CC", "Solar", "Wind"]
                 
-                #loop throu agent_names
-                for producer_name in agent_names:
-                
-                    # Loop through the investments dataframe
-                    for i in range(len(self.agents[producer_name]['Investments'])):
-
-                        # Check if power plant lifetime is under 6
-                        if self.agents[producer_name]['Investments'].loc[i, 'Lifetime'] < 6 and self.agents[producer_name]['Investments'].loc[i, 'Status'] == True:   
-     
-                            # Add 5 years to lifetime
-                            self.agents[producer_name]['Investments'].loc[i, 'Lifetime'] += 5
+                    #loop throu agent_names
+                    for producer_name in agent_names:
+                    
+                        # Loop through the investments dataframe
+                        for i in range(len(self.agents[producer_name]['Investments'])):
+    
+                            # Check if power plant lifetime is under 6
+                            if self.agents[producer_name]['Investments'].loc[i, 'Lifetime'] < 6 and self.agents[producer_name]['Investments'].loc[i, 'Status'] == True:   
+         
+                                # Add 5 years to lifetime
+                                self.agents[producer_name]['Investments'].loc[i, 'Lifetime'] += 5
                             
                             
                 #calculate deprication of every agent
@@ -773,10 +752,10 @@ class ESS:
                 
                 
                 #strategy 4: increase storage
-                self.battery_max = 10000
-                self.hydrogen_max = 250000
-                self.battery_shift = 2.5
-                self.hydrogen_shift = 1
+                #self.battery_max = 10000
+                #self.hydrogen_max = 250000
+                #self.battery_shift = 2.5
+                #self.hydrogen_shift = 1
     
                 """
                 #calculate deprication of every agent
@@ -799,7 +778,6 @@ class ESS:
                 total_demand = self.agents["Consumer 1"]["data"].loc[self.timestep-1, "Power_demand"] + self.agents["Consumer 2"]["data"].loc[self.timestep-1, "Power_demand"] + self.agents["Consumer 3"]["data"].loc[self.timestep-1, "Power_demand"]
     
                 #Run the network simulation and gather data
-                #ToDo: übergabe von self. variablen brauche ich nicht
                 self.run_network(self.timestep-1, total_demand, pv_generation_profile, wind_generation_profile, load_factor_profile)
                 
                 #add taxes and network costs to electricity price
@@ -1900,7 +1878,6 @@ class ESS:
         self.agents["Solar"]["data"].loc[self.timestep, "Installed_power"] = self.agents["Solar"]["data"].loc[self.timestep, "Installed_power_initial"] + self.agents["Solar"]["Investments"].loc[self.agents["Solar"]["Investments"]['Status'] == True, 'Block_size'].sum()
 
         #update efficiency, increase by 0.1% every year
-        #todo: function einbauen die dafür sorgt, dass der wirkungsgrad bis 41% steigt und danach so bleibt
         self.agents["Solar"]["data"].loc[self.timestep, "Efficiency"] = self.agents["Solar"]["data"].loc[self.timestep-1, "Efficiency"] + 0.001    
 
         #fill generated_power_total with calculated PyPSA data
@@ -2142,7 +2119,6 @@ class ESS:
         self.agents["Wind"]["data"].loc[self.timestep, "Installed_power"] = self.agents["Wind"]["data"].loc[self.timestep, "Installed_power_initial"] + self.agents["Wind"]["Investments"].loc[self.agents["Wind"]["Investments"]['Status'] == True, 'Block_size'].sum()
 
         #update efficiency, increase by 0.1% every year
-        #todo: function einbauen die dafür sorgt, dass der wirkungsgrad bis 41% steigt und danach so bleibt
         self.agents["Wind"]["data"].loc[self.timestep, "Efficiency"] = self.agents["Wind"]["data"].loc[self.timestep-1, "Efficiency"] + 0.001    
              
         #print("marginal costs")
@@ -2393,8 +2369,6 @@ class ESS:
         Water pump, battery and hydrogen
         """
         print("\nStorage prognosis called")
-         
-        #ToDo: Fix kosten und payback einfügen
     
         #Battery storage
         print("\nBattery storage")
@@ -2402,17 +2376,6 @@ class ESS:
         #update efficiency
         self.agents["Storage"]["data"].loc[self.timestep, "Battery_eff"] = self.agents["Storage"]["data"].loc[self.timestep-1, "Battery_eff"]
         
-        #update income
-        
-        #update expenses
-        #opex = 0.75% of capex
-        
-        #update payback
-        
-        #update profit
-        
-        #update money
-
         #calculate profit outlook
         profit = sum((-self.battery_profile*100)*self.marginal_costs)
         
@@ -2469,16 +2432,6 @@ class ESS:
         #update efficiency
         self.agents["Storage"]["data"].loc[self.timestep, "Hydrogen_eff"] = self.agents["Storage"]["data"].loc[self.timestep-1, "Hydrogen_eff"]
     
-        #update income
-        
-        #update expenses
-        #opex = 2.75% of capex
-        
-        #update payback
-        
-        #update profit
-        
-        #update money
 
         #calculate profit outlook
         profit = sum((-self.hydrogen_profile*100)*self.marginal_costs)
@@ -2550,7 +2503,6 @@ class ESS:
         """
         print("\nStorage called")
          
-        #ToDo: Fix kosten und payback einfügen
     
         #Battery storage
         print("\nBattery storage")
@@ -2566,16 +2518,6 @@ class ESS:
         #update efficiency
         self.agents["Storage"]["data"].loc[self.timestep, "Battery_eff"] = self.agents["Storage"]["data"].loc[self.timestep-1, "Battery_eff"]
         
-        #update income
-        
-        #update expenses
-        #opex = 0.75% of capex
-        
-        #update payback
-        
-        #update profit
-        
-        #update money
 
         #calculate profit outlook
         profit = sum((-self.battery_profile*100)*self.marginal_costs)
@@ -2654,17 +2596,6 @@ class ESS:
         #update efficiency
         self.agents["Storage"]["data"].loc[self.timestep, "Hydrogen_eff"] = self.agents["Storage"]["data"].loc[self.timestep-1, "Hydrogen_eff"]
     
-        #update income
-        
-        #update expenses
-        #opex = 2.75% of capex
-        
-        #update payback
-        
-        #update profit
-        
-        #update money
-
         #calculate profit outlook
         profit = sum((-self.hydrogen_profile*100)*self.marginal_costs)
         
@@ -2751,10 +2682,6 @@ class ESS:
         """
         print("\nConsumer 1 called")
         
-        #ToDo: make demand increase depended of average_price, but "real" demand isnt just dependend of cost, how could i implement this?
-        #maybe the demand has the same base level (because the demand doesnt realy change much in the last 20 years) only the cost de or increase the demand.
-        #implement a electricity price, at which the consumers change there behaviour and invest in energy efficiency and own generatition
-        
         #update power demand
         self.agents["Consumer 1"]["data"].loc[self.timestep, "Power_demand"] = self.Electricity_demand.loc[self.timestep,"Industry demand"]
         
@@ -2794,9 +2721,6 @@ class ESS:
         This consumer resembels the combined private consumers
         """
         print("\nConsumer 3 called")
-
-        #ToDo: der demand geht seit 2009 runter, aber durch e autos etc, wird der strombedarf in der zukunft steigen...
-        #ToDo: Investment funktion einfügen, wenn der strompreis so hoch ist, dass sich ein investment in verringerter demand oder eigene erzeugung lohnt
 
         #update power demand
         self.agents["Consumer 3"]["data"].loc[self.timestep, "Power_demand"] = self.Electricity_demand.loc[self.timestep,"Private demand"]

@@ -3,9 +3,9 @@ A agent based model of the German electricity sector
 
 This model was created in the master thesis "Modeling the German electricity economy - Strategy analysis for overcoming crises and advancing the energy transition".
 
-It is referenced in the paper "Crisis as a Chance - Strategy analysis with agent-based modeling for advancing the energy transition"
+It is referenced in the paper *REFERENZ EINFÜGEN*
 
-The main model can be found in the script "ABM_GES_6", the calibration script is named "analysis_ABM".
+The main model can be found in the script "ABM_GES", the calibration script is named "calibration_ABM_GES".
 
 The nessesary librarys are: PyPSA, Numpy financial, Pandas, Numpy and Matplotlib.
 
@@ -25,3 +25,16 @@ The sources of these datasets are listed in the following:
 10. Carbon dioxide certificate cost: Trading Economics, "EU Carbon Permits"
 11. Uranium costs 2009 - 2021: International Monetary Fund, "Uranium / US Dollar"
 12. LIBOR 2009 - 2021: https://www.global-rates.com, LIBOR ZINSSATZ
+
+
+Guide:
+*GUIDE EINFÜGEN*
+
+
+License:
+
+You are free to use, modify, and distribute this code for any purpose, commercial or non-commercial, as long as you give appropriate credit to Tim Schell.
+
+Attribution can be provided by mentioning Tim Schell in your project documentation or README file.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.

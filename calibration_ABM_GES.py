@@ -3,10 +3,12 @@
 Created on Wed Aug  9 21:30:34 2023
 
 @author: Tim Schell
+
+Calibration script for the ABM_GES model.
 """
 
 
-from ABM_GES_6 import ESS
+from ABM_GES import ESS
 import pandas as pd
 import numpy as np
 import time
@@ -19,27 +21,15 @@ if __name__ == '__main__':
     end_year=2021
     
     #parameters to be analized in excel
-    grid_resolution = 40
+    grid_resolution = 10
     deviation = 0.4
     zooms = 0
 
     """
-    1 run 2009 - 2021 with prognisis: 3 min (laptop)/ 2 min (Desktop)
-    10 variables
-    12 grid resolution
-    -> 120 runs * 3 min (laptop) = 378 min  -> 6.3 stunden
+    One run 2009 - 2021 with prognosis 2-3 minutes
+    Runs = Variable count * grid resolution
     
-    total time = variables * grid resolution * 3.15 (laptop) * zooms
-    
-    Freitag auf samstag morgen: 20 Stunden
-    deviation: 0.75, Zooms 4: Variablen 10
-    10 * x * 4 * 3 = 20 stunden -> grid resolutin: 10
-    
-    wochenende: mögliche zeit: 45 Stunden
-    -> 8 variablen * 4 Zooms -> 28 grid resolution
-    
-    
-    
+    total time = variables * grid resolution * 2-3 minutes * zooms
     """
 
     print("Estimated runtime in minutes:")
@@ -48,14 +38,14 @@ if __name__ == '__main__':
 
     min_index = 0    
 
-    elec_prices_empirical = pd.read_excel("Strompreis.xlsx",sheet_name="Empirical")
+    elec_prices_empirical = pd.read_excel("Data/Electricity_prices.xlsx",sheet_name="Empirical")
     
-    installed_power_empirical = pd.read_excel("Installed_power.xlsx")
+    installed_power_empirical = pd.read_excel("Data/Installed_power.xlsx")
 
 
     #create parameter_list_full
-    #parameter_list = pd.read_excel('Parameters_to_be_analysed.xlsx', sheet_name= "Complete")
-    parameter_list = pd.read_excel('Parameters_to_be_analysed.xlsx', sheet_name= "Part")
+    parameter_list = pd.read_excel('Data/Parameters_to_be_calibrated.xlsx', sheet_name= "Complete")
+    #parameter_list = pd.read_excel('Data/Parameters_to_be_calibrated.xlsx', sheet_name= "Part")
     
     params_list = []
     
@@ -110,8 +100,6 @@ if __name__ == '__main__':
             for j in range(0,grid_resolution):
                 parameter_list_full.iloc[j+i*grid_resolution,i] = parameter_list_steps.iloc[j,i]
     
-        
-    
     
         for y in range(0,len(parameter_list_full)):
         
@@ -153,9 +141,7 @@ if __name__ == '__main__':
             nrmsd = pd.DataFrame(data = data)
             
             
-            
-            #ToDo: calculate NRMSD in function
-            #NRMSD berechnung, electricity cost
+            #NRMSD calculation, electricity cost
             no_of_calculations = len(electricity_prices)
             stepwidth = 1
     
@@ -174,7 +160,7 @@ if __name__ == '__main__':
             nrmsd.iloc[0,0] = nrmsd_elec_prices    
         
     
-            #NRMSD berechnung, installed power coal
+            #NRMSD calculation, installed power coal
             no_of_calculations = len(installed_power_coal)
             stepwidth = 1
     
@@ -193,7 +179,7 @@ if __name__ == '__main__':
             nrmsd.iloc[0,1] = nrmsd_installed_power_coal
             
         
-            #NRMSD berechnung, installed power gas
+            #NRMSD calculation, installed power gas
             no_of_calculations = len(installed_power_gas)
             stepwidth = 1
     
@@ -211,8 +197,7 @@ if __name__ == '__main__':
             #save in df
             nrmsd.iloc[0,2] = nrmsd_installed_power_gas
             
-            
-            #NRMSD berechnung, installed power solar
+            #NRMSD calculation, installed power solar
             no_of_calculations = len(installed_power_solar)
             stepwidth = 1
     
@@ -231,7 +216,7 @@ if __name__ == '__main__':
             nrmsd.iloc[0,3] = nrmsd_installed_power_solar
             
             
-            #NRMSD berechnung, installed power wind
+            #NRMSD calculation, installed power wind
             no_of_calculations = len(installed_power_wind)
             stepwidth = 1
     
@@ -254,7 +239,7 @@ if __name__ == '__main__':
             nrmsd_list.append(nrmsd_total)
         
         
-        # Concatenate the list of DataFrames into a single DataFrame
+        #concatenate the list of DataFrames into a single DataFrame
         result_df = pd.concat(electricity_costs, axis=1)
         
         #append nrmsd list to dataframe
@@ -309,8 +294,6 @@ if __name__ == '__main__':
     #save final paramter lists with NRMSD
     parameter_list_nrmsd = pd.concat(params_list, axis=1)
     
-    #todo: ich könnte die parameter_liste direkt in die excel speichern, dann muss ich das nicht manuell machen
-    #ich muss aber dran denken, dass die start und end_val = leer/nan sein müssen
         
     #print final computing time
     executionTime = (time.time() - startTime)
