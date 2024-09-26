@@ -20,11 +20,11 @@ The sources of these datasets are listed in the following:
 5. Generation and load profile: https://data.open-power-system-data.org
 6. OPEX: NREL, "2016 Annual Technology Baseline"; Trinomics, "Final Report Cost of Energy (LCOE): Energy costs, taxes and the impact of government interventions on investments"; iea, "Projected Costs of Generating Electricity"; Statista, "Fixed and variable costs for the operation and maintenance of new power plants in the United States as of 2021, by technology type"
 7. CAPEX: NREL (National Renewable Energy Laboratory). 2023. "2023 Annual Technology Baseline." Golden, CO: National Renewable Energy Laboratory. https://atb.nrel.gov/. 
-8. Ressource price projection, carbon dioxide certificate cost projection: F. Birol, R. Priddle, "World Energy Outlook 2016"
+8. Ressource price projection (coal, gas), carbon dioxide certificate cost projection: F. Birol, R. Priddle, "World Energy Outlook 2016"
 9. Coal price 2009 - 2021: Energy institute, "Energy Institute based on S&P Global Platts - Statistical Review of World Energy"
 10. Gas price 2009 - 2021: Statista Research Department, Entwicklung des Kraftwerkpreises für Erdgas in Deutschland in den Jahren 1973 bis 2022 (in Euro je Tonne Steinkohleeinheit)
-11. Carbon dioxide certificate cost: Trading Economics, "EU Carbon Permits"
-12. Uranium costs 2009 - 2021: International Monetary Fund, "Uranium / US Dollar"
+11. Uranium price 2009 - 2021: International Monetary Fund, "Uranium / US Dollar"
+12. Carbon dioxide certificate price 2009 - 2021: Trading Economics, "EU Carbon Permits"
 13. LIBOR 2009 - 2021: https://www.global-rates.com, LIBOR ZINSSATZ
 
 
